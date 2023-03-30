@@ -62,6 +62,7 @@ class Course(models.Model):
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Enrollment')
     total_enrollment = models.IntegerField(default=0)
     is_enrolled = False
+
     def __str__(self):
         return "Name: " + self.name + "," + \
                "Description: " + self.description
@@ -94,9 +95,10 @@ class Enrollment(models.Model):
     rating = models.FloatField(default=5.0)
 
 
+
 class Question(models.Model):
-    lesson_id = models.ForeignKey(Course, on_delete=models.CASCADE)
-    question_text = models.CharField(default="question")
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    question_text = models.CharField(max_length=200, default='text')
     grade = models.IntegerField(default=0)
     def is_get_score(self, selected_ids):
         all_answers = self.choice_set.filter(is_correct=True).count()
@@ -107,9 +109,11 @@ class Question(models.Model):
             return False
 
 class Choice(models.Model):
-    question_id = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.CharField(default="choice")
-    is_correct = models.IntegerChoices(default=0)
+     question_id = models.ForeignKey(Question, on_delete = models.CASCADE)
+     is_correct = models.IntegerField(default=1)
+     choice_text = models.CharField(max_length=200, default = 'text')
+
+
 class Submission(models.Model):
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
     choices = models.ManyToManyField(Choice)
